@@ -52,9 +52,6 @@ module.exports = async ({
         subIssueId: childNodeId,
       },
     );
-    console.log(
-      `Linked issue #${child.data.number} as child of #${parentIssueNumber}`,
-    );
   } catch (error) {
     core.warning(`Failed to link sub-issue via GraphQL: ${error.message}`);
   }
