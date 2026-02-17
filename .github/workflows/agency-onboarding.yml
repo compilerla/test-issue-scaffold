@@ -42,7 +42,7 @@ jobs:
             const fs = require('fs');
             const path = require('path');
 
-            const template = '.github/workflows/agency-onboarding/parent.md';
+            const templatePath = '.github/workflows/agency-onboarding/parent.md';
             const { long_name, short_name, transit_processor, website } = context.payload.inputs;
 
             // read body from template, fill in placeholders
