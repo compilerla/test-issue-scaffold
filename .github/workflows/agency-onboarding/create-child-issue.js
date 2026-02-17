@@ -5,7 +5,7 @@ module.exports = async ({
   github,
   context,
   core,
-  parentIssueNumber,
+  parentNodeId,
   templateName,
   title,
 }) => {
@@ -26,14 +26,6 @@ module.exports = async ({
     .replace(/{{SHORT_NAME}}/g, short_name)
     .replace(/{{TRANSIT_PROCESSOR}}/g, transit_processor)
     .replace(/{{WEBSITE}}/g, website || "N/A");
-
-  // we only have the 'number' (integer) from the workflow, but GraphQL needs the 'node_id' (string)
-  const parent = await github.rest.issues.get({
-    owner: context.repo.owner,
-    repo: context.repo.repo,
-    issue_number: parentIssueNumber,
-  });
-  const parentNodeId = parent.data.node_id;
 
   // create the child issue
   const child = await github.rest.issues.create({

@@ -60,7 +60,7 @@ jobs:
               body: body
             });
 
-            return response.data.number;
+            return response.data.node_id;
 
       - name: Onboarding form issue
         id: form
@@ -72,7 +72,7 @@ jobs:
 
             await createChild({
               github, context, core,
-              parentIssueNumber: ${{ steps.parent.outputs.result }},
+              parentNodeId: ${{ steps.parent.outputs.result }},
               templateName: 'form.md',
               title: `${short_name}: Transit provider has completed their onboarding form`
             });
