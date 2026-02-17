@@ -87,7 +87,7 @@ jobs:
 
             await createChild({
               github, context, core,
-              parentIssueNumber: ${{ steps.parent.outputs.result }},
+              parentNodeId: ${{ steps.parent.outputs.result }},
               templateName: 'table.md',
               title: `${short_name}: Add transit provider to adoption table`
             });
