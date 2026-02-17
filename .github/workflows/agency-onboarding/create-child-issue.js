@@ -12,7 +12,7 @@ module.exports = async ({
   const { long_name, short_name, transit_processor, website } =
     context.payload.inputs;
 
-  // read and Process Template
+  // read and process body template
   const templatePath = path.join(
     process.env.GITHUB_WORKSPACE,
     `.github/workflows/agency-onboarding/${templateName}`,
@@ -27,6 +27,14 @@ module.exports = async ({
     .replace(/{{TRANSIT_PROCESSOR}}/g, transit_processor)
     .replace(/{{WEBSITE}}/g, website || "N/A");
 
+  // we only have the 'number' (integer) from the workflow, but GraphQL needs the 'node_id' (string)
+  const parent = await github.rest.issues.get({
+    owner: context.repo.owner,
+    repo: context.repo.repo,
+    issue_number: parentIssueNumber,
+  });
+  const parentNodeId = parent.data.node_id;
+
   // create the child issue
   const child = await github.rest.issues.create({
     owner: context.repo.owner,
@@ -35,23 +43,28 @@ module.exports = async ({
     labels: ["agency-onboarding"],
     body: body,
   });
+  const childNodeId = child.data.node_id;
 
-  // link as sub-issue
+  // link sub-issue using GraphQL
   try {
-    await github.request("POST /repos/{owner}/{repo}/issues/{id}/sub_issue", {
-      owner: context.repo.owner,
-      repo: context.repo.repo,
-      id: parentIssueNumber,
-      sub_issue_id: child.data.id,
-      headers: {
-        "X-GitHub-Api-Version": "2022-11-28",
+    await github.graphql(
+      `mutation AddSubIssue($issueId: ID!, $subIssueId: ID!) {
+        addSubIssue(input: { issueId: $issueId, subIssueId: $subIssueId }) {
+          issue {
+            id
+          }
+        }
+      }`,
+      {
+        issueId: parentNodeId,
+        subIssueId: childNodeId,
       },
-    });
+    );
     console.log(
       `Linked issue #${child.data.number} as child of #${parentIssueNumber}`,
     );
   } catch (error) {
-    core.warning(`Failed to link sub-issue: ${error.message}`);
+    core.warning(`Failed to link sub-issue via GraphQL: ${error.message}`);
   }
 
   return child.data.number;
