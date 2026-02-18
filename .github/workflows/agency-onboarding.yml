@@ -22,6 +22,10 @@ on:
         description: "The full URL (including https://) to the transit provider's website"
         required: false
         type: string
+      launch_date:
+        description: "Estimated launch date (month and year); e.g. August 2026"
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -43,14 +47,15 @@ jobs:
             const path = require('path');
 
             const templatePath = '.github/workflows/agency-onboarding/parent.md';
-            const { long_name, short_name, transit_processor, website } = context.payload.inputs;
+            const { long_name, short_name, transit_processor, website, launch_date } = context.payload.inputs;
 
             // read body from template, fill in placeholders
             let body = fs.readFileSync(templatePath, 'utf8');
             body = body.replace(/{{LONG_NAME}}/g, long_name)
                        .replace(/{{SHORT_NAME}}/g, short_name)
                        .replace(/{{TRANSIT_PROCESSOR}}/g, transit_processor)
-                       .replace(/{{WEBSITE}}/g, website);
+                       .replace(/{{WEBSITE}}/g, website || "N/A")
+                       .replace(/{{LAUNCH_DATE}}/g, launch_date || "TBD");
 
             const response = await github.rest.issues.create({
               owner: context.repo.owner,
@@ -125,6 +130,7 @@ jobs:
       - name: Test environment configuration issue
         id: test
         uses: actions/github-script@v7
+        if: context.payload.inputs.payment_processor == "Littlepay"
         with:
           script: |
             const createChild = require('./.github/workflows/agency-onboarding/create-child-issue.js');
@@ -167,8 +173,8 @@ jobs:
               title: `${short_name}: Transit provider is configured for In-Person Enrollments in Benefits Administrator`
             });
 
-      - name: Metabase transaction charts configuration issue
-        id: metabase-configured
+      - name: Metabase configuration issue
+        id: metabase-config
         uses: actions/github-script@v7
         with:
           script: |
@@ -178,7 +184,7 @@ jobs:
             await createChild({
               github, context, core,
               parentNodeId: ${{ steps.parent.outputs.result }},
-              templateName: 'metabase-transactions.md',
+              templateName: 'metabase-config.md',
               title: `${short_name}: Add product names to transaction charts in Metabase`
             });
 
@@ -197,8 +203,8 @@ jobs:
               title: `${short_name}: Amplitude displays one or more successful enrollments for this transit provider`
             });
 
-      - name: Metabase enrollment issue
-        id: metabase-enrollment
+      - name: Metabase metrics issue
+        id: metabase-metrics
         uses: actions/github-script@v7
         with:
           script: |
@@ -209,5 +215,5 @@ jobs:
               github, context, core,
               parentNodeId: ${{ steps.parent.outputs.result }},
               templateName: 'metabase-enrollments.md',
-              title: `${short_name}: Metabase displays one or more successful enrollments for this transit provider`
+              title: `${short_name}: Metabase metrics display activity for this transit provider`
             });
