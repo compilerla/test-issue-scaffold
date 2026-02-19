@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-module.exports = async ({ github, context }) => {
+module.exports = async ({ github, context, parentIssue }) => {
   const { long_name, launch_date, short_name } = context.payload.inputs;
 
   // Helper function to convert "Month Year" to "MM/YYYY", or return "Planned"
@@ -125,9 +125,12 @@ module.exports = async ({ github, context }) => {
     title: `Docs: Add ${long_name} to adoption table`,
     head: branchName,
     base: "main",
-    body: `Adds **${long_name}** to the adoption table in the documentation.`,
+    body: `Adds **${long_name}** to the adoption table in the docs.
+
+    Part of onboarding epic #${parentIssue}.
+    `,
     draft: true,
   });
 
-  return prResponse.data.html_url;
+  return prResponse.data;
 };
