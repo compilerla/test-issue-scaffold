@@ -29,7 +29,7 @@ module.exports = async ({ github, context, parentIssue }) => {
       const month = months[parts[0].toLowerCase()];
       const year = parts.slice(1).join("");
       if (month && year && /^\d{4}$/.test(year)) {
-        return `${month}/${year}`;
+        return `${month}/${year} (target)`;
       }
     }
 
