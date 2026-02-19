@@ -125,10 +125,7 @@ module.exports = async ({ github, context, parentIssue }) => {
     title: `Docs: Add ${long_name} to adoption table`,
     head: branchName,
     base: "main",
-    body: `Adds **${long_name}** to the adoption table in the docs.
-
-    Part of onboarding epic #${parentIssue}.
-    `,
+    body: `Adds **${long_name}** to the adoption table in the docs.\n\nPart of onboarding epic #${parentIssue}.`,
     draft: true,
   });
 
