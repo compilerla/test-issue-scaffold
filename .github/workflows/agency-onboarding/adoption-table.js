@@ -1,10 +1,7 @@
-const fs = require("fs");
+const fs = await import('fs')
 
-module.exports = async ({ github, context, parentIssue }) => {
-  const { long_name, launch_date, short_name } = context.payload.inputs;
-
-  // Helper function to convert "Month Year" to "MM/YYYY", or return "Planned"
-  function convertToMMYYYY(dateStr) {
+// Helper function to convert "Month Year" to "MM/YYYY", or return "Planned"
+function convertToMMYYYY(dateStr) {
     if (!dateStr || !dateStr.trim()) {
       return "Planned";
     }
@@ -36,6 +33,9 @@ module.exports = async ({ github, context, parentIssue }) => {
     // If not in expected format, return as-is (assume it's already MM/YYYY)
     return dateStr.trim();
   }
+
+export const updateAdoptionTable =  async ({ github, context, parentIssue }) => {
+  const { long_name, launch_date, short_name } = context.payload.inputs;
 
   const launchDateStr = convertToMMYYYY(launch_date);
 
