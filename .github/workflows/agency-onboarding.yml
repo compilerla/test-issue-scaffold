@@ -74,10 +74,11 @@ jobs:
           script: |
             const createChild = require('./.github/workflows/agency-onboarding/create-child-issue.js');
             const { short_name } = context.payload.inputs;
+            const parentNodeId = ${{ steps.parent.outputs.result.node_id }};
 
             await createChild({
               github, context, core,
-              parentNodeId: ${{ steps.parent.outputs.result.node_id }},
+              parentNodeId: parentNodeId,
               templateName: 'onboarding-form.md',
               title: `${short_name}: Transit provider has completed their onboarding form`
             });
@@ -88,10 +89,11 @@ jobs:
         with:
           script: |
             const updateAdoptionTable = require('./.github/workflows/agency-onboarding/adoption-table.js');
+            const parentIssue = ${{ steps.parent.outputs.result.number }};
 
             draftPr = await updateAdoptionTable({
               github, context,
-              parentIssue: ${{ steps.parent.outputs.result.number }}
+              parentIssue: parentIssue
             });
 
             core.notice(`Draft PR for updating agency adoption table: ${draftPr.html_url}`);
@@ -103,10 +105,11 @@ jobs:
           script: |
             const createChild = require('./.github/workflows/agency-onboarding/create-child-issue.js');
             const { short_name, transit_processor } = context.payload.inputs;
+            const parentNodeId = ${{ steps.parent.outputs.result.node_id }};
 
             await createChild({
               github, context, core,
-              parentNodeId: ${{ steps.parent.outputs.result.node_id }},
+              parentNodeId: parentNodeId,
               templateName: `${transit_processor.toLowerCase()}.md`,
               title: `${short_name}: ${transit_processor} configuration complete; ready for configuration in Cal-ITP Benefits`
             });
@@ -118,10 +121,11 @@ jobs:
           script: |
             const createChild = require('./.github/workflows/agency-onboarding/create-child-issue.js');
             const { short_name } = context.payload.inputs;
+            const parentNodeId = ${{ steps.parent.outputs.result.node_id }};
 
             await createChild({
               github, context, core,
-              parentNodeId: ${{ steps.parent.outputs.result.node_id }},
+              parentNodeId: parentNodeId,
               templateName: 'production-validation.md',
               title: `${short_name}: Transit provider fully configured for Production Validation testing in Cal-ITP Benefits \`test\` environment`
             });
@@ -134,10 +138,11 @@ jobs:
           script: |
             const createChild = require('./.github/workflows/agency-onboarding/create-child-issue.js');
             const { short_name } = context.payload.inputs;
+            const parentNodeId = ${{ steps.parent.outputs.result.node_id }};
 
             await createChild({
               github, context, core,
-              parentNodeId: ${{ steps.parent.outputs.result.node_id }},
+              parentNodeId: parentNodeId,
               templateName: 'test.md',
               title: `${short_name}: Transit provider fully configured and in Cal-ITP Benefits \`test\` environment`
             });
@@ -149,10 +154,11 @@ jobs:
           script: |
             const createChild = require('./.github/workflows/agency-onboarding/create-child-issue.js');
             const { short_name } = context.payload.inputs;
+            const parentNodeId = ${{ steps.parent.outputs.result.node_id }};
 
             await createChild({
               github, context, core,
-              parentNodeId: ${{ steps.parent.outputs.result.node_id }},
+              parentNodeId: parentNodeId,
               templateName: 'production.md',
               title: `${short_name}: Transit provider fully configured and active in Cal-ITP Benefits \`production\` environment`
             });
@@ -167,7 +173,7 @@ jobs:
 
             await createChild({
               github, context, core,
-              parentNodeId: ${{ steps.parent.outputs.result.node_id }},
+              parentNodeId: parentNodeId,
               templateName: 'in-person.md',
               title: `${short_name}: Transit provider is configured for In-Person Enrollments in Benefits Administrator`
             });
@@ -179,10 +185,11 @@ jobs:
           script: |
             const createChild = require('./.github/workflows/agency-onboarding/create-child-issue.js');
             const { short_name } = context.payload.inputs;
+            const parentNodeId = ${{ steps.parent.outputs.result.node_id }};
 
             await createChild({
               github, context, core,
-              parentNodeId: ${{ steps.parent.outputs.result.node_id }},
+              parentNodeId: parentNodeId,
               templateName: 'metabase-config.md',
               title: `${short_name}: Add product names to transaction charts in Metabase`
             });
@@ -194,10 +201,11 @@ jobs:
           script: |
             const createChild = require('./.github/workflows/agency-onboarding/create-child-issue.js');
             const { short_name } = context.payload.inputs;
+            const parentNodeId = ${{ steps.parent.outputs.result.node_id }};
 
             await createChild({
               github, context, core,
-              parentNodeId: ${{ steps.parent.outputs.result.node_id }},
+              parentNodeId: parentNodeId,
               templateName: 'amplitude.md',
               title: `${short_name}: Amplitude displays one or more successful enrollments for this transit provider`
             });
@@ -209,10 +217,11 @@ jobs:
           script: |
             const createChild = require('./.github/workflows/agency-onboarding/create-child-issue.js');
             const { short_name } = context.payload.inputs;
+            const parentNodeId = ${{ steps.parent.outputs.result.node_id }};
 
             await createChild({
               github, context, core,
-              parentNodeId: ${{ steps.parent.outputs.result.node_id }},
+              parentNodeId: parentNodeId,
               templateName: 'metabase-enrollments.md',
               title: `${short_name}: Metabase metrics display activity for this transit provider`
             });
