@@ -178,7 +178,7 @@ jobs:
 
             await createChild({
               github, context, core,
-              parentNodeId: ${{ steps.parent.outputs.node_id }},
+              parentNodeId: "${{ steps.parent.outputs.node_id }}",
               templateName: 'metabase-config.md',
               title: `Add product names to transaction charts in Metabase`
             });
@@ -192,7 +192,7 @@ jobs:
 
             await createChild({
               github, context, core,
-              parentNodeId: ${{ steps.parent.outputs.node_id }},
+              parentNodeId: "${{ steps.parent.outputs.node_id }}",
               templateName: 'amplitude.md',
               title: `Amplitude displays one or more successful enrollments for this transit provider`
             });
@@ -206,7 +206,7 @@ jobs:
 
             await createChild({
               github, context, core,
-              parentNodeId: ${{ steps.parent.outputs.node_id }},
+              parentNodeId: "${{ steps.parent.outputs.node_id }}",
               templateName: 'metabase-enrollments.md',
               title: `Metabase metrics display activity for this transit provider`
             });
