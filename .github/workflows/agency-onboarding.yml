@@ -65,10 +65,8 @@ jobs:
               body: body
             });
 
-            return {
-              node_id: response.data.node_id,
-              number: response.data.number
-            };
+            core.setOutput('node_id', response.data.node_id);
+            core.setOutput('issue_number', response.data.number);
 
       - name: Onboarding form issue
         id: form
