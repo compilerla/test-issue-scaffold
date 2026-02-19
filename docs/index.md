@@ -101,6 +101,7 @@ The following California transit providers have adopted Cal-ITP Benefits. The be
 | **City of Roseville**                               | 07/2026 (target)    | \*           | \*                   | \*            | \*          | \*         |
 | **Santa Cruz Metropolitan Transit District**        | Planned             | \*           | \*                   | \*            | \*          | \*         |
 | **Santa Barbara County Association of Governments** | Planned             | \*           | \*                   | \*            | \*          | \*         |
+| **California State Transit**                        | 08/2026           | \*           | \*                   | \*            | \*          | \*         |
 
 ## Supported enrollment pathways
 
