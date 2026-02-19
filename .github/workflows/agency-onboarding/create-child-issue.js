@@ -15,7 +15,7 @@ module.exports = async ({
   // read and process body template
   const templatePath = path.join(
     process.env.GITHUB_WORKSPACE,
-    `.github/workflows/agency-onboarding/${templateName}`
+    `.github/workflows/agency-onboarding/${templateName}`,
   );
 
   let body = fs.readFileSync(templatePath, "utf8");
@@ -32,7 +32,7 @@ module.exports = async ({
   const child = await github.rest.issues.create({
     owner: context.repo.owner,
     repo: context.repo.repo,
-    title: title,
+    title: `${short_name}: ${title}`,
     labels: ["agency-onboarding"],
     body: body,
   });
@@ -51,7 +51,7 @@ module.exports = async ({
       {
         issueId: parentNodeId,
         subIssueId: childNodeId,
-      }
+      },
     );
   } catch (error) {
     core.warning(`Failed to link sub-issue via GraphQL: ${error.message}`);
