@@ -82,7 +82,7 @@ jobs:
               });
 
               core.warning(`Initiative issue node_id: ${initiativeIssue.data.node_id}`);
-              await linkSubIssue({github, core, initiativeIssue.data.node_id, epicNodeId});
+              await linkSubIssue({github, core, parentNodeId: initiativeIssue.data.node_id, childNodeId: epicNodeId});
             }
 
             core.setOutput('node_id', epicNodeId);
