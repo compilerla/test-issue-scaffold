@@ -26,6 +26,10 @@ on:
         description: "Estimated launch date (month and year); e.g. August 2026"
         required: false
         type: string
+      initiative_issue:
+        description: "The number (e.g. 1234) for the parent Initiative issue"
+        required: false
+        type: number
 
 permissions:
   contents: write
@@ -46,16 +50,17 @@ jobs:
           script: |
             const fs = await import('fs')
             const path = await import('path')
+            const { linkSubIssue } = await import('${{ github.workspace }}/.github/workflows/agency-onboarding/child-issue.js')
 
             const templatePath = '.github/workflows/agency-onboarding/parent.md';
-            const { long_name, short_name, transit_processor, website, launch_date } = context.payload.inputs;
+            const { long_name, short_name, transit_processor, website, launch_date, initiative_issue } = context.payload.inputs;
 
             // read body from template, fill in placeholders
             const body = fs.readFileSync(templatePath, 'utf8')
               .replace(/{{LONG_NAME}}/g, long_name)
               .replace(/{{SHORT_NAME}}/g, short_name)
               .replace(/{{TRANSIT_PROCESSOR}}/g, transit_processor)
-              .replace(/{{WEBSITE}}/g, website || "N/A")
+              .replace(/{{WEBSITE}}/g, website ?? "N/A")
               .replace(/{{LAUNCH_DATE}}/g, launch_date ?? "TBD");
 
             const response = await github.rest.issues.create({
@@ -65,8 +70,20 @@ jobs:
               labels: ['epic', 'agency-onboarding'],
               body: body
             });
+            const node_id = response.data.node_id;
 
-            core.setOutput('node_id', response.data.node_id);
+            if (initiative_issue > 0) {
+              const initiativeIssue = await github.rest.issues.get({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: initiative_issue
+              });
+
+              await linkSubIssue(github, core, initiativeIssue.data.node_id, node_id);
+            }
+
+
+            core.setOutput('node_id', node_id);
             core.setOutput('issue_number', response.data.number);
 
       - name: Onboarding form issue
@@ -103,7 +120,7 @@ jobs:
         with:
           script: |
             const { createChild } = await import('${{ github.workspace }}/.github/workflows/agency-onboarding/child-issue.js')
-            
+
             const { transit_processor } = context.payload.inputs;
 
             await createChild({

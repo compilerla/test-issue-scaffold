@@ -1,4 +1,4 @@
-const fs = await import('fs')
+const fs = await import("fs");
 const path = await import("path");
 
 export const createChild = async ({
@@ -18,8 +18,9 @@ export const createChild = async ({
     `.github/workflows/agency-onboarding/${templateName}`,
   );
 
-    // replace all placeholders
-  const body = fs.readFileSync(templatePath, "utf8")
+  // replace all placeholders
+  const body = fs
+    .readFileSync(templatePath, "utf8")
     .replace(/{{LONG_NAME}}/g, long_name)
     .replace(/{{SHORT_NAME}}/g, short_name)
     .replace(/{{TRANSIT_PROCESSOR}}/g, transit_processor)
@@ -34,8 +35,19 @@ export const createChild = async ({
     labels: ["agency-onboarding"],
     body: body,
   });
-  const childNodeId = child.data.node_id;
 
+  const childNodeId = child.data.node_id;
+  await linkSubIssue(github, core, parentNodeId, childNodeId);
+
+  return child.data.number;
+};
+
+export const linkSubIssue = async ({
+  github,
+  core,
+  parentNodeId,
+  childNodeId,
+}) => {
   // link sub-issue using GraphQL
   try {
     await github.graphql(
@@ -54,6 +66,4 @@ export const createChild = async ({
   } catch (error) {
     core.warning(`Failed to link sub-issue via GraphQL: ${error.message}`);
   }
-
-  return child.data.number;
 };
