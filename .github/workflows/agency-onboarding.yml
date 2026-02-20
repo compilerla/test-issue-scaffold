@@ -72,7 +72,7 @@ jobs:
             });
             const node_id = response.data.node_id;
 
-            if (initiative_issue > 0) {
+            if (initiative_issue) {
               const initiativeIssue = await github.rest.issues.get({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
@@ -81,7 +81,6 @@ jobs:
 
               await linkSubIssue(github, core, initiativeIssue.data.node_id, node_id);
             }
-
 
             core.setOutput('node_id', node_id);
             core.setOutput('issue_number', response.data.number);
