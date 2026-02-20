@@ -70,19 +70,22 @@ jobs:
               labels: ['epic', 'agency-onboarding'],
               body: body
             });
-            const node_id = response.data.node_id;
+            const epicNodeId = response.data.node_id;
 
             if (initiative_issue) {
+              core.warning(`Initiative issue: ${initiative_issue}`);
+
               const initiativeIssue = await github.rest.issues.get({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: initiative_issue
               });
 
-              await linkSubIssue(github, core, initiativeIssue.data.node_id, node_id);
+              core.warning(`Initiative issue node_id: ${initiativeIssue.data.node_id}`);
+              await linkSubIssue({github, core, initiativeIssue.data.node_id, epicNodeId});
             }
 
-            core.setOutput('node_id', node_id);
+            core.setOutput('node_id', epicNodeId);
             core.setOutput('issue_number', response.data.number);
 
       - name: Onboarding form issue

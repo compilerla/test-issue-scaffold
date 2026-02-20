@@ -37,7 +37,7 @@ export const createChild = async ({
   });
 
   const childNodeId = child.data.node_id;
-  await linkSubIssue(github, core, parentNodeId, childNodeId);
+  await linkSubIssue({ github, core, parentNodeId, childNodeId });
 
   return child.data.number;
 };
