@@ -16,8 +16,8 @@ const createIssue = async ({
     .replace(/{{LONG_NAME}}/g, long_name)
     .replace(/{{SHORT_NAME}}/g, short_name)
     .replace(/{{TRANSIT_PROCESSOR}}/g, transit_processor)
-    .replace(/{{WEBSITE}}/g, website ?? "N/A")
-    .replace(/{{LAUNCH_DATE}}/g, launch_date ?? "TBD");
+    .replace(/{{WEBSITE}}/g, website || "N/A")
+    .replace(/{{LAUNCH_DATE}}/g, launch_date || "TBD");
 
   return await github.rest.issues.create({
     owner: context.repo.owner,
