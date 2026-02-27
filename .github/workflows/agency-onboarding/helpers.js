@@ -1,40 +1,97 @@
-const fs = await import('fs')
+const fs = await import("fs");
 
-// Helper function to convert "Month Year" to "MM/YYYY", or return "Planned"
+export const createSubIssue = async ({
+  github,
+  context,
+  core,
+  parentNodeId,
+  templateName,
+  title,
+}) => {
+  const { long_name, short_name, transit_processor, website, launch_date } =
+    context.payload.inputs;
+
+  // read and process body template
+  const templatePath = `${process.env.GITHUB_WORKSPACE}/.github/workflows/agency-onboarding/${templateName}`;
+
+  // replace all placeholders
+  const body = fs
+    .readFileSync(templatePath, "utf8")
+    .replace(/{{LONG_NAME}}/g, long_name)
+    .replace(/{{SHORT_NAME}}/g, short_name)
+    .replace(/{{TRANSIT_PROCESSOR}}/g, transit_processor)
+    .replace(/{{WEBSITE}}/g, website || "N/A")
+    .replace(/{{LAUNCH_DATE}}/g, launch_date || "TBD");
+
+  // create the child issue
+  const child = await github.rest.issues.create({
+    owner: context.repo.owner,
+    repo: context.repo.repo,
+    title: `${short_name}: ${title}`,
+    labels: ["agency-onboarding"],
+    body: body,
+  });
+
+  const childNodeId = child.data.node_id;
+  await linkSubIssue({ github, core, parentNodeId, childNodeId });
+
+  return child.data.number;
+};
+
+export const linkSubIssue = async ({
+  github,
+  core,
+  parentNodeId,
+  childNodeId,
+}) => {
+  // link sub-issue using GraphQL
+  try {
+    await github.graphql(
+      `mutation AddSubIssue($issueId: ID!, $subIssueId: ID!) {
+        addSubIssue(input: { issueId: $issueId, subIssueId: $subIssueId }) {
+          issue {
+            id
+          }
+        }
+      }`,
+      {
+        issueId: parentNodeId,
+        subIssueId: childNodeId,
+      },
+    );
+  } catch (error) {
+    core.warning(`Failed to link sub-issue via GraphQL: ${error.message}`);
+  }
+};
+
+// Helper functions to convert "Month Year" to "MM/YYYY", or return "Planned"
+
+function monthFromString(month) {
+  // March > '3'
+  // march > '3'
+  // mar > '3'
+  return String(new Date(Date.parse(month + " 1, 2026")).getMonth() + 1);
+}
+
 function convertToMMYYYY(dateStr) {
-    if (!dateStr || !dateStr.trim()) {
-      return "Planned";
-    }
-
-    const months = {
-      january: "01",
-      february: "02",
-      march: "03",
-      april: "04",
-      may: "05",
-      june: "06",
-      july: "07",
-      august: "08",
-      september: "09",
-      october: "10",
-      november: "11",
-      december: "12",
-    };
-
-    const parts = dateStr.trim().split(/\s+/);
-    if (parts.length >= 2) {
-      const month = months[parts[0].toLowerCase()];
-      const year = parts.slice(1).join("");
-      if (month && year && /^\d{4}$/.test(year)) {
-        return `${month}/${year} (target)`;
-      }
-    }
-
-    // If not in expected format, return as-is (assume it's already MM/YYYY)
-    return dateStr.trim();
+  if (!dateStr || !dateStr.trim()) {
+    return "Planned";
   }
 
-export const updateAdoptionTable =  async ({ github, context, parentIssue }) => {
+  const parts = dateStr.trim().split(/\s+/);
+  if (parts.length >= 2) {
+    const month = monthFromString(parts[0]);
+    const year = parts.slice(1).join("");
+    if (month && year && /^\d{4}$/.test(year)) {
+      return `${month}/${year} (target)`;
+    }
+  }
+
+  // If not in expected format, return as-is (assume it's already MM/YYYY)
+  return dateStr.trim();
+}
+
+export const updateAdoptionTable = async ({ github, context, parentIssue }) => {
   const { long_name, launch_date, short_name } = context.payload.inputs;
 
   const launchDateStr = convertToMMYYYY(launch_date);
