@@ -1,0 +1,14 @@
+name: "Project triage: test"
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  add-to-project-agency-onboarding:
+    runs-on: ubuntu-latest
+    if: "contains( github.event.issue.labels.*.name, 'agency-onboarding')"
+    run: echo 'new agency onboarding issue detected'
+    if: "!contains( github.event.issue.labels.*.name, 'agency-onboarding')"
+    run: echo 'new issue detected, not agency onboarding though'
+    
