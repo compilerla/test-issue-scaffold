@@ -5,10 +5,14 @@ on:
     types: [opened]
 
 jobs:
-  add-to-project-agency-onboarding:
+  check:
     runs-on: ubuntu-latest
     if: "contains( github.event.issue.labels.*.name, 'agency-onboarding')"
-    run: echo 'new agency onboarding issue detected'
+    steps:
+      - run: echo 'new agency onboarding issue detected'
+
+  inverted-check:
+    runs-on: ubuntu-latest
     if: "!contains( github.event.issue.labels.*.name, 'agency-onboarding')"
-    run: echo 'new issue detected, not agency onboarding though'
-    
+    steps:
+      - run: echo 'new issue detected, not agency onboarding though'
